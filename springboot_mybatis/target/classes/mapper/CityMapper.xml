@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hlx.springboot.dao.CityDao">
+
+	<!-- 配置resultMap -->
+	<!-- 将JAVA实体类中的属性和表中的字段进行对应 column:数据库中的列 property:对应的实体类中的属性 -->
+	<resultMap type="com.hlx.springboot.entity.City" id="BaseResultMap">
+		<id column="id" property="id" />
+		<result column="province_id" property="provinceId" />
+		<result column="city_name" property="cityName" />
+		<result column="description" property="description" />
+	</resultMap>
+
+
+	<!-- sql模板 -->
+	<sql id="sqlModel">
+		id,province_id,city_name, description
+	</sql>
+
+
+
+	<select id="all" resultMap="BaseResultMap">
+		select
+		<include refid="sqlModel" />
+		from city
+	</select>
+
+
+
+	<!-- 根据名称查找信息 -->
+	<select id="findCity" resultMap="BaseResultMap" parameterType="java.lang.String">
+		select
+		<include refid="sqlModel" />
+		from city where city_name=#{cityName}
+	</select>
+</mapper>

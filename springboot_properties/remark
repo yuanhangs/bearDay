@@ -1,0 +1,13 @@
+注意:SpringBoot启动类在com.hlx.springboot中,那么其他的必须在这个包中哦! com.hlx.springboot.entity
+
+#spring.profiles.active=dev ==>调用application-dev.properties
+spring.profiles.active=prod ==>调用application-prod.properties
+
+
+一.启动Application.java 
+
+
+二.分别测试TestProperties.java
+  @ConfigurationProperties(prefix="home") //改成home来调用这个配置文件application.yml
+  
+  注意: 必须创建这个包哦! com.hlx.springboot.entity

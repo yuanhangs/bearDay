@@ -1,0 +1,176 @@
+Redis帮助文档
+http://www.runoob.com/redis/redis-install.html
+
+下载Redis
+https://github.com/MicrosoftArchive/redis/releases
+
+下载Redis之后的要求:
+Redis 支持 32 位和 64 位。这个需要根据你系统平台的实际情况选择，
+这里我们下载 Redis-x64-xxx.zip压缩包到 C 盘，解压后，将文件夹重新命名为 redis。
+
+
+Redis支持五种数据类型：
+string（字符串），hash（哈希），list（列表），set（集合）
+及zset(sorted set：有序集合)。
+
+1)string类型是Redis最基本的数据类型，一个键最大能存储512MB。
+   操作:
+	redis 127.0.0.1:6379> set age 20
+	OK
+	redis 127.0.0.1:6379> get age
+	"20"
+
+2)hash（哈希）适合用于存储对象。每个 hash 可以存储 232 -1 键值对（40多亿）。
+
+  操作:
+	redis 127.0.0.1:6379> hmset myhash filed1 het1 field2 het2
+	OK
+	redis 127.0.0.1:6379> hget myhash filed1
+	"het1"
+	redis 127.0.0.1:6379> hgetall myhash
+	1) "filed1"
+	2) "het1"
+	3) "field2"
+	4) "het2"
+
+3)List（列表）简单的字符串列表，按照插入顺序排序。你可以添加一个元素到列表的头部（左边）或者尾部（右边）。
+ 列表最多可存储 232 - 1 元素 (4294967295, 每个列表可存储40多亿)。
+  操作:
+	redis 127.0.0.1:6379> lpush names bear
+	(integer) 1
+	redis 127.0.0.1:6379> lpush names dog
+	(integer) 2
+	redis 127.0.0.1:6379> lpush names cat
+	(integer) 3
+	redis 127.0.0.1:6379> lrange names 0 3
+	1) "cat"
+	2) "dog"
+	3) "bear"
+	redis 127.0.0.1:6379> lrange names 0 2
+	1) "cat"
+	2) "dog"
+	3) "bear"
+
+ 4)Set（集合）:Redis的Set是string类型的无序集合。
+   集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。
+   sadd 命令
+   添加一个string元素到,key对应的set集合中，成功返回1,如果元素已经在集合中返回0,
+   key对应的set不存在返回错误。
+   语法: sadd key member
+   操作:
+        redis 127.0.0.1:6379> sadd runs redis
+	(integer) 1
+	redis 127.0.0.1:6379> sadd runs ha
+	(integer) 1
+	redis 127.0.0.1:6379> sadd runs rabite
+	(integer) 1
+	redis 127.0.0.1:6379> sadd runs ha    --重复的不能添加
+	(integer) 0
+	redis 127.0.0.1:6379> smembers runs
+	1) "redis"
+	2) "rabite"
+	3) "ha"
+   注意：以上实例中 rabitmq 添加了两次，但根据集合内元素的唯一性，第二次插入的元素将被忽略。
+   集合中最大的成员数为 232 - 1(4294967295, 每个集合可存储40多亿个成员)。
+
+  5)zset(sorted set：有序集合)
+Redis zset 和 set 一样也是string类型元素的集合,且不允许重复的成员。
+不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
+zset的成员是唯一的,但分数(score)却可以重复。
+zadd 命令
+添加元素到集合，元素在集合中存在则更新对应score
+   语法: zadd key score member 
+   操作:
+	redis 127.0.0.1:6379> zadd runb 0 c
+	(integer) 1
+	redis 127.0.0.1:6379> zadd runb 1 x
+	(integer) 1
+	redis 127.0.0.1:6379> zadd runb 10 a
+	(integer) 1
+	redis 127.0.0.1:6379> zadd runb 4  b -- --重复的不能添加
+	(integer) 1
+	redis 127.0.0.1:6379> zadd runb 4 b
+	(integer) 0
+	redis 127.0.0.1:6379> zrangebyscore runb 0 10
+	1) "c"
+	2) "x"
+	3) "b"
+	4) "a"
+
+ Redis 发布订阅(pub/sub)是一种消息通信模式：发送者(pub)发送消息，订阅者(sub)接收消息。
+
+ (1)创建频道myChat ， 以及订阅这个频道的2个客户端 
+	redis 127.0.0.1:6379> subscribe myChat
+	Reading messages... (press Ctrl-C to quit)
+	1) "subscribe"
+	2) "myChat"
+	3) (integer) 1
+
+ (2)有新消息通过 PUBLISH 命令发送给频道 myChat 时， 这个消息就会被发送给订阅它的2个客户端
+
+   再重新开启个 redis 客户端，然后在同一个频道 redisChat 发布两次消息，
+        redis 127.0.0.1:6379> PUBLISH myChat 'this is test redis'
+	(integer) 1
+	redis 127.0.0.1:6379> PUBLISH myChat 'study redis'
+	(integer) 1
+	redis 127.0.0.1:6379>
+
+  订阅者就能接收到消息。
+	Reading messages... (press Ctrl-C to quit)
+	1) "subscribe"
+	2) "myChat"
+	3) (integer) 1
+	1) "message"
+	2) "myChat"
+	3) "this is test redis"
+	1) "message"
+	2) "myChat"
+	3) "study redis"
+
+
+Redis 事务
+Redis 事务可以一次执行多个命令， 并且带有以下两个重要的保证：
+  (1)批量操作在发送 EXEC 命令前被放入队列缓存。
+  (2)收到 EXEC 命令后进入事务执行，事务中任意命令执行失败，其余的命令依然被执行。
+  (3)在事务执行过程，其他客户端提交的命令请求不会插入到事务执行命令序列中。
+一个事务从开始到执行会经历以下三个阶段：
+	(1)开始事务。
+	(2)命令入队。
+	(3)执行事务。
+
+   操作:
+	redis 127.0.0.1:6379> multi   --(1)开始事务。
+	OK
+	redis 127.0.0.1:6379> set uname 'myredis'   --(2)命令入队。
+	QUEUED
+	redis 127.0.0.1:6379> get uname
+	QUEUED
+	redis 127.0.0.1:6379> sadd tag 'aa' 'cc' 'dd'
+	QUEUED
+	redis 127.0.0.1:6379> smembers tag
+	QUEUED
+	redis 127.0.0.1:6379> get unames
+	QUEUED
+	redis 127.0.0.1:6379> exec     --(3)执行事务。
+	1) OK
+	2) "myredis"
+	3) (integer) 3
+	4) 1) "cc"
+	   2) "dd"
+	   3) "aa"
+	5) (nil)
+
+discard:取消事务，放弃执行事务块内的所有命令。(必须执行事务之前!)
+
+
+Redis 连接命令主要是用于连接 redis 服务。
+   (1)Redis Auth 命令用于检测给定的密码和配置文件中的密码是否相符。
+        语法: auth password 验证密码是否正确
+	redis 127.0.0.1:6379> auth password
+	(error) ERR Client sent AUTH, but no password is set
+	redis 127.0.0.1:6379> config set requirepass 'aaa'
+	OK
+	redis 127.0.0.1:6379> auth password
+	(error) ERR invalid password
+	redis 127.0.0.1:6379> auth aaa
+	OK

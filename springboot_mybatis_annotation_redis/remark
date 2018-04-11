@@ -1,0 +1,20 @@
+@PathVariable  :
+	https://blog.csdn.net/shuduti/article/details/53540142
+	- /order/1 HTTP GET ：得到 id = 1 的 order
+	- /order/1 HTTP DELETE：删除 id = 1的 order
+	- /order/1 HTTP PUT：更新id = 1的 order
+	- /order HTTP POST：新增 order
+
+@RequestBody:
+首先@RequestBody需要接的参数是一个string化的json，这里直接使用JSON.stringify(json)这个方法来转化
+其次@RequestBody，从名称上来看也就是说要读取的数据在请求体里，所以要发post请求
+
+
+
+error1:
+Unrecognized token 'Id': was expecting ('true', 'false' or 'null')
+ at [Source: org.glassfish.jersey.message.internal.ReaderInterceptorExecutor$UnCloseableInputStream@9e3d60d; line: 1, column: 19]
+ 
+解决方法:
+从报错信息上看，我传的ID是布尔值，可是我的ID是字符串，怎么会是布尔值，我的ID是布尔值，但是必须要转换成字符串才可以，所以下面的代码就转换了：然后就OK了!
+data = JSON.stringify(data);

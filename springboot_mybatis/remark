@@ -1,0 +1,8 @@
+https://blog.csdn.net/aquarius_gamus/article/details/37704615
+
+当实体类中的属性和数据库中的字段对应是，我们使用resultType和parameterType就可以完成CRUD；
+
+当实体类中的属性和数据库中的字段不对应时，就要用resultMap和parameterMap了。
+
+err1:
+java.lang.IllegalArgumentException: Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986
