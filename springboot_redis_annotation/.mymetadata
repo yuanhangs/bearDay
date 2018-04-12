@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="springboot_redis_annotation"
+  id="myeclipse.1522723366484"
+  context-root="/springboot_mybatis_annotation_redis_annotation"
+  j2ee-spec="6.0"
+  archive="springboot_redis_annotation.war">
+  <attributes>
+    <attribute name="webrootdir" value="src/main/webapp" />
+  </attributes>
+</project-module>
+
